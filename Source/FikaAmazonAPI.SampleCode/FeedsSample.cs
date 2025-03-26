@@ -226,7 +226,7 @@ namespace FikaAmazonAPI.SampleCode
 
         }
 
-        public async Task SubmitFeedINVENTORY_JSONAsync(string SKU, int Quantity, string? FulfillmentLatency = null)
+        public async Task SubmitFeedINVENTORY_JSONAsync(string SKU, int Quantity, string FulfillmentLatency)
         {
             ConstructJSONFeedService createDocument = new ConstructJSONFeedService(amazonConnection.GetCurrentSellerID);
 
@@ -237,11 +237,6 @@ namespace FikaAmazonAPI.SampleCode
                 Quantity = Quantity,
                 FulfillmentLatency = FulfillmentLatency,
             };
-
-            if (FulfillmentLatency != null)
-            {
-                msg.FulfillmentLatency = FulfillmentLatency;
-            }
 
             list.Add(msg);
             createDocument.AddInventoryMessage(list);
