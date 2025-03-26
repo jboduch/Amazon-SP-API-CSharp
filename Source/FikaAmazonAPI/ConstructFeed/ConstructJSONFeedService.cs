@@ -1,6 +1,7 @@
 ﻿using FikaAmazonAPI.ConstructFeed.JsonMessages;
 using FikaAmazonAPI.ConstructFeed.Messages;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace FikaAmazonAPI.ConstructFeed
@@ -61,6 +62,42 @@ namespace FikaAmazonAPI.ConstructFeed
                         {
                             op = "replace",
                             path = "/attributes/purchasable_offer",
+                            value =new List<PatcheValueData>{ patcheValueData }
+                        }
+                    }
+                };
+
+                jsonMessagesData.messages.Add(msg);
+            }
+        }
+
+        public void AddInventoryMessage(IList<InventoryMessage> messages)
+        {
+            int index = jsonMessagesData.messages.Count;
+            foreach (var itm in messages)
+            {
+                var patcheValueData = new PatcheValueData()
+                {
+                    quantity = itm.Quantity,
+                    fulfillment_channel_code = "DEFAULT"
+                };
+
+                if (itm.FulfillmentLatencySpecified)
+                {
+                    patcheValueData.lead_time_to_ship_max_days = Int32.Parse(itm.FulfillmentLatency);
+                }
+
+                var msg = new MessagesData()
+                {
+                    messageId = ++index,
+                    sku = itm.SKU,
+                    operationType = "PATCH",
+                    productType = "PRODUCT",
+                    patches = new List<PatcheData>{
+                        new PatcheData()
+                        {
+                            op = "replace",
+                            path = "/attributes/fulfillment_availability",
                             value =new List<PatcheValueData>{ patcheValueData }
                         }
                     }

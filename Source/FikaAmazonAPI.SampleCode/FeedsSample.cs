@@ -226,6 +226,35 @@ namespace FikaAmazonAPI.SampleCode
 
         }
 
+        public async Task SubmitFeedINVENTORY_JSONAsync(string SKU, int Quantity, string? FulfillmentLatency = null)
+        {
+            ConstructJSONFeedService createDocument = new ConstructJSONFeedService(amazonConnection.GetCurrentSellerID);
+
+            var list = new List<InventoryMessage>();
+            var msg = new InventoryMessage()
+            {
+                SKU = SKU,
+                Quantity = Quantity,
+                FulfillmentLatency = FulfillmentLatency,
+            };
+
+            if (FulfillmentLatency != null)
+            {
+                msg.FulfillmentLatency = FulfillmentLatency;
+            }
+
+            list.Add(msg);
+            createDocument.AddInventoryMessage(list);
+
+            var jsonString = createDocument.GetJSON();
+
+            string feedID = await amazonConnection.Feed.SubmitFeedAsync(jsonString, FeedType.JSON_LISTINGS_FEED, null, null, ContentType.JSON);
+
+
+            await GetJsonFeedDetails(feedID);
+
+        }
+
         public async Task SubmitFeedPricingWithSalePrice(string sku, decimal price, decimal salePrice, DateTime startDate, DateTime endDate)
         {
             var currencyCode = amazonConnection.GetCurrentMarketplace.CurrencyCode.ToString();
